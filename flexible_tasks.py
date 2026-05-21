@@ -4,7 +4,7 @@ from inspect_evals.mbpp import mbpp
 from inspect_evals.class_eval import class_eval
 
 @task
-def my_custom_mbpp():
+def mbpp_samples():
     """Dynamically filters mbpp samples."""
     sample_ids_raw = os.environ.get("HAWK_SAMPLE_IDS")
     if sample_ids_raw:
@@ -13,7 +13,7 @@ def my_custom_mbpp():
     return mbpp()
 
 @task
-def my_custom_class_eval():
+def gsm8k_samples():
     """Dynamically filters gsm8k samples."""
     sample_ids_raw = os.environ.get("HAWK_SAMPLE_IDS")
     if sample_ids_raw:
