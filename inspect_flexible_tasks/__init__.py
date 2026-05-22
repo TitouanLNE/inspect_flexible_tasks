@@ -7,9 +7,9 @@ from inspect_evals.gsm8k import gsm8k
 logger = logging.getLogger(__name__)
 
 def _safe_apply_filter(task_instance, sample_ids=None):
-    """Safely filters an evaluation dataset using Inspect's native slice logic
+    """Safely filters an evaluation dataset by modifying its samples array,
 
-    to prevent losing critical metadata like sandbox rules.
+    preserving all container metadata and sandbox orchestration variables.
     """
     # Prioritize task args over the fallback global env variable
     ids_source = sample_ids or os.environ.get("HAWK_SAMPLE_IDS")
@@ -23,9 +23,14 @@ def _safe_apply_filter(task_instance, sample_ids=None):
         }
         
         if target_indices:
-            # Native filtering: Keep the original dataset class instance
-            # and just filter the internal sample list by true index positioning.
-            task_instance.dataset = task_instance.dataset[list(target_indices)]
+            # Filter the samples list directly by absolute index positions
+            filtered_samples = [
+                sample for position, sample in enumerate(task_instance.dataset.samples)
+                if position in target_indices
+            ]
+            
+            # Re-assign the filtered list back to the dataset container safely
+            task_instance.dataset.samples = filtered_samples
             
     return task_instance
 
