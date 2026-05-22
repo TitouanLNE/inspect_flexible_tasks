@@ -12,4 +12,5 @@ dependencies = [
 ]
 
 [tool.setuptools]
-modules = ["flexible_tasks"]
+py-modules = ["flexible_tasks"]
+include-package-data = true
