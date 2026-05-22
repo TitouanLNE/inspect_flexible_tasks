@@ -21,5 +21,3 @@ def gsm8k_samples():
         target_ids = [int(x.strip()) for x in sample_ids_raw.split(",") if x.strip().isdigit()]
         return task_with(gsm8k(), sample_id=target_ids)
     return gsm8k()
-
-__all__ = ["mbpp_samples", "gsm8k_samples"]
