@@ -3,7 +3,6 @@ from inspect_ai import task, task_with
 from inspect_evals.mbpp import mbpp
 from inspect_evals.class_eval import class_eval
 from inspect_evals.gsm8k import gsm8k
-from .gsm8k_samples import gsm8k_samples
 
 @task(name="inspect_flexible_tasks/mbpp_samples")
 def mbpp_samples():
