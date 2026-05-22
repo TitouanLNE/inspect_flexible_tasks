@@ -11,4 +11,4 @@ dependencies = [
 ]
 
 [project.entry-points."inspect_ai.extensions"]
-flexible_tasks = "flexible_tasks"
+inspect_flexible_tasks = "flexible_tasks"
