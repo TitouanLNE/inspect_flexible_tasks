@@ -14,4 +14,4 @@ dependencies = [
 packages = ["inspect_flexible_tasks"]
 
 [project.entry-points."inspect_ai.extensions"]
-inspect_flexible_tasks = "inspect_flexible_tasks"
+inspect_flexible_tasks = "inspect_flexible_tasks.__init__"
