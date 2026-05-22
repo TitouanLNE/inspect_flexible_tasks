@@ -2,6 +2,7 @@ import os
 from inspect_ai import task, task_with
 from inspect_evals.mbpp import mbpp
 from inspect_evals.class_eval import class_eval
+from inspect_evals.gsm8k import gsm8k  # <-- ADD THIS IMPORT
 
 @task
 def mbpp_samples():
