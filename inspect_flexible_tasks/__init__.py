@@ -7,41 +7,41 @@ from inspect_evals.gsm8k import gsm8k
 
 logger = logging.getLogger(__name__)
 
-def _filter_dataset(task_instance):
-    """Safely filters an Inspect dataset by matching user-requested indices 
+def _filter_dataset(task_instance, sample_ids=None):
+    """Safely filters an Inspect dataset by matching user-requested indices
 
-    against absolute row positions.
+    passed via task args or environment variables.
     """
-    sample_ids_raw = os.environ.get("HAWK_SAMPLE_IDS")
-    if sample_ids_raw and hasattr(task_instance, "dataset") and task_instance.dataset:
-        # Convert string list "0,10,13" into a clean set of integers: {0, 10, 13}
+    # Prioritize task arguments over the global environment variable
+    ids_source = sample_ids or os.environ.get("HAWK_SAMPLE_IDS")
+    
+    if ids_source and hasattr(task_instance, "dataset") and task_instance.dataset:
+        # Safely extract indices handling integers or raw strings
         target_indices = {
             int(x.strip()) 
-            for x in sample_ids_raw.split(",") 
+            for x in str(ids_source).split(",") 
             if x.strip().isdigit()
         }
         
         if target_indices:
             filtered_samples = []
             
-            # Walk through the dataset and strictly use its absolute row position
+            # Map samples strictly by their absolute row position
             for position, sample in enumerate(task_instance.dataset):
                 if position in target_indices:
-                    # Explicitly override or stamp the sample id attribute so Inspect logs it correctly
                     sample.id = position
                     filtered_samples.append(sample)
             
-            # Fallback boundary check: if the user requested indices out of range
+            # Safety fallback check
             if not filtered_samples:
                 logger.warning(
-                    f"HAWK_SAMPLE_IDS {list(target_indices)} were out of range for this split. "
+                    f"Target indices {list(target_indices)} were out of range. "
                     f"Dataset size is {len(task_instance.dataset)}. Defaulting to first 2 records."
                 )
                 filtered_samples = list(task_instance.dataset)[:2]
                 for i, s in enumerate(filtered_samples):
                     s.id = i
             
-            # Pack it back into the Inspect container safely
             orig_name = getattr(task_instance.dataset, "name", "filtered_dataset")
             orig_location = getattr(task_instance.dataset, "location", None)
             
@@ -54,11 +54,11 @@ def _filter_dataset(task_instance):
     return task_instance
 
 @task(name="mbpp_samples")
-def mbpp_samples():
+def mbpp_samples(sample_ids=None):  # <--- MUST HAVE sample_ids=None HERE
     """Dynamically filters mbpp samples by index location."""
-    return _filter_dataset(mbpp())
+    return _filter_dataset(mbpp(), sample_ids=sample_ids)
 
 @task(name="gsm8k_samples")
-def gsm8k_samples():
+def gsm8k_samples(sample_ids=None):  # <--- MUST HAVE sample_ids=None HERE
     """Dynamically filters gsm8k samples by index location."""
-    return _filter_dataset(gsm8k())
+    return _filter_dataset(gsm8k(), sample_ids=sample_ids)
