@@ -4,7 +4,7 @@ from inspect_evals.mbpp import mbpp
 from inspect_evals.class_eval import class_eval
 from inspect_evals.gsm8k import gsm8k
 
-@task
+@task(name="inspect_flexible_tasks/mbpp_samples")
 def mbpp_samples():
     """Dynamically filters mbpp samples."""
     sample_ids_raw = os.environ.get("HAWK_SAMPLE_IDS")
@@ -13,7 +13,7 @@ def mbpp_samples():
         return task_with(mbpp(), sample_id=target_ids)
     return mbpp()
 
-@task
+@task(name="inspect_flexible_tasks/gsm8k_samples")
 def gsm8k_samples():
     """Dynamically filters gsm8k samples."""
     sample_ids_raw = os.environ.get("HAWK_SAMPLE_IDS")
