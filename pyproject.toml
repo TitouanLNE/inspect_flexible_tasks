@@ -10,8 +10,5 @@ dependencies = [
     "inspect_evals"
 ]
 
-[tool.setuptools]
-py-modules = ["flexible_tasks"]
-
 [project.entry-points."inspect_ai.extensions"]
-inspect_flexible_tasks = "flexible_tasks"
+inspect_flexible_tasks = "inspect_flexible_tasks"
