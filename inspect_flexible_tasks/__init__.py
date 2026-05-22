@@ -10,27 +10,22 @@ def _filter_dataset(task_instance):
         target_ids = [
             int(x.strip()) 
             for x in sample_ids_raw.split(",") 
-            for x in [x.strip()] 
-            if x.isdigit()
+            if x.strip().isdigit()
         ]
         if target_ids:
-            # Filter the dataset records by their id property
+            # Filter standard inspect-evals datasets by sample ID
             task_instance.dataset = [
                 sample for sample in task_instance.dataset 
                 if getattr(sample, "id", None) in target_ids or sample.get("id") in target_ids
             ]
     return task_instance
 
-@task(name="inspect_flexible_tasks/mbpp_samples")
+@task(name="mbpp_samples")
 def mbpp_samples():
     """Dynamically filters mbpp samples."""
-    # Generate a fresh instance of the baseline task
-    base_task = mbpp()
-    return _filter_dataset(base_task)
+    return _filter_dataset(mbpp())
 
-@task(name="inspect_flexible_tasks/gsm8k_samples")
+@task(name="gsm8k_samples")
 def gsm8k_samples():
     """Dynamically filters gsm8k samples."""
-    # Generate a fresh instance of the baseline task
-    base_task = gsm8k()
-    return _filter_dataset(base_task)
+    return _filter_dataset(gsm8k())
