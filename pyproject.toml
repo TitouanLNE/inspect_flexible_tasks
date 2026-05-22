@@ -1,16 +1,14 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "flexible_tasks"
+name = "inspect_flexible_tasks"
 version = "0.1.0"
-description = "Custom dynamic wrappers for Inspect AI benchmarks"
 dependencies = [
     "inspect_ai",
-    "inspect_evals @ git+https://github.com/UKGovernmentBEIS/inspect_evals@main"
+    "inspect_evals"
 ]
 
-[tool.setuptools]
-py-modules = ["flexible_tasks"]
-include-package-data = true
+[project.entry-points."inspect_ai.extensions"]
+flexible_tasks = "flexible_tasks"
