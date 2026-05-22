@@ -1,13 +1,13 @@
 import os
 from inspect_ai import task
+from inspect_ai.dataset import MemoryDataset  # Native dataset container wrapper
 from inspect_evals.mbpp import mbpp
 from inspect_evals.gsm8k import gsm8k
 
 def _filter_dataset(task_instance):
-    """Helper to inject sample filtering into an Inspect Sample dataset safely."""
+    """Helper to safely filter an Inspect task dataset while maintaining framework attributes."""
     sample_ids_raw = os.environ.get("HAWK_SAMPLE_IDS")
-    if sample_ids_raw and hasattr(task_instance, "dataset"):
-        # Safely extract digits into integer target IDs
+    if sample_ids_raw and hasattr(task_instance, "dataset") and task_instance.dataset:
         target_ids = [
             int(x.strip()) 
             for x in sample_ids_raw.split(",") 
@@ -15,11 +15,22 @@ def _filter_dataset(task_instance):
         ]
         
         if target_ids:
-            # Filter the dataset records using standard attribute lookup on the Sample object
-            task_instance.dataset = [
+            # 1. Filter the internal sample list
+            filtered_samples = [
                 sample for sample in task_instance.dataset 
                 if getattr(sample, "id", None) in target_ids
             ]
+            
+            # 2. Retain original dataset metadata fields safely
+            orig_name = getattr(task_instance.dataset, "name", "filtered_dataset")
+            orig_location = getattr(task_instance.dataset, "location", None)
+            
+            # 3. Rewrap back into an Inspect-recognized dataset container
+            task_instance.dataset = MemoryDataset(
+                samples=filtered_samples,
+                name=orig_name,
+                location=orig_location
+            )
             
     return task_instance
 
